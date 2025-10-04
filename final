@@ -93,11 +93,117 @@ INSERT INTO Calificaciones (id_inscripcion, nota, fecha_evaluacion) VALUES
 -- 2. Procedimiento para calcular el promedio de notas de un estudiante
 -- 3. Procedimiento para obtener la lista de cursos en los que está inscrito un estudiante
 -- 4. Procedimiento para actualizar la calificación de un estudiante en un curso
--- 5. Procedimiento para eliminar la inscripción de un estudiante en un curso 
+-- 5. Procedimiento para eliminar la inscripción de un estudiante en un curso
 
 
 -- Entregable:
 
 -- Enviar link del repositorio al correo diego.prado.o@uniautonoma.edu.co
 -- Asunto: Taller Clase Procedimientos Almacenados
+
+
+
+
+-- 1. INSCRIBIR ESTUDIANTE EN CURSO
+
+DELIMITER //
+
+CREATE PROCEDURE inscribir_estudiante_curso(
+    IN p_id_estudiante INT,
+    IN p_id_curso INT,
+    IN p_fecha_inscripcion DATE
+)
+BEGIN
+
+	INSERT INTO Inscripciones (id_estudiante, id_curso, fecha_inscripcion)
+    VALUES (p_id_estudiante, p_id_curso, p_fecha_inscripcion);
+    
+    SELECT 'Estudiante inscrito' AS Mensaje,
+           LAST_INSERT_ID() AS ID_Inscripcion_Nueva;
+    
+END//
+
+DELIMITER ;
+
+-- CALL inscribir_estudiante_curso(1, 5, '2025-10-03');
+
+
+/*
+CREATE VIEW verestudiantes as 
+SELECT id_estudiante, nombre
+FROM estudiantes ; 
+
+SELECT * FROM verestudiantes;
+DROP VIEW verestudiantes;*/
+
+
+-- 2. Procedimiento para calcular el promedio de notas de un estudiante
+DELIMITER //
+
+CREATE PROCEDURE PromedioNotas(IN estudiante_id INT)
+BEGIN
+    SELECT AVG(c.nota) AS promedio
+    FROM Calificaciones c
+    JOIN Inscripciones i ON c.id_inscripcion = i.id_inscripcion
+    WHERE i.id_estudiante = estudiante_id;
+END //
+
+DELIMITER ;
+
+CALL PromedioNotas(1);
+
+-- 3. Procedimiento para obtener la lista de cursos en los que está inscrito un estudiante
+
+DELIMITER //
+
+CREATE PROCEDURE CursosEstudiante(IN estudiante_id INT)
+BEGIN
+    SELECT c.nombre AS curso, c.descripcion, c.duracion
+    FROM Inscripciones i
+    JOIN Cursos c ON i.id_curso = c.id_curso
+    WHERE i.id_estudiante = estudiante_id;
+END //
+
+DELIMITER ;
+
+CALL CursosEstudiante(1);
+
+-- 4. Procedimiento para actualizar la calificación de un estudiante en un curso
+
+DELIMITER //
+
+CREATE PROCEDURE ActualizarNota(
+    IN estudiante_id INT,
+    IN curso_id INT,
+    IN nueva_nota DECIMAL(5,2)
+)
+BEGIN
+    UPDATE Calificaciones c
+    JOIN Inscripciones i ON c.id_inscripcion = i.id_inscripcion
+    SET c.nota = nueva_nota
+    WHERE i.id_estudiante = estudiante_id AND i.id_curso = curso_id;
+END //
+
+DELIMITER ;
+
+CaLL ActualizarNota(1,1,5.0);
+
+
+
+-- 5. Procedimiento para eliminar la inscripción de un estudiante en un curso
+
+DELIMITER //
+
+CREATE PROCEDURE EliminarInscripcion(
+    IN estudiante_id INT,
+    IN curso_id INT
+)
+BEGIN
+    DELETE FROM Inscripciones
+    WHERE id_estudiante = estudiante_id AND id_curso = curso_id;
+END //
+
+DELIMITER ;
+
+SELECT * FROM Inscripciones WHERE id_estudiante = 1 AND id_curso = 1;
 
