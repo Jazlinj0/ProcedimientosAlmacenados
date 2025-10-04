@@ -1,13 +1,7 @@
--- Ejercicio Procedimientos Almacenados
 
--- Contexto:
--- Una plataforma de cursos en línea necesita gestionar la información sobre cursos, estudiantes, inscripciones y calificaciones.
--- Se requiere el diseño de la base de datos y la implementación de procedimientos almacenados para la gestión de datos.
+CREATE DATABASE ejerciciocorte;
+USE ejerciciocorte;
 
--- Creación de las tablas
-
-create database ejerciciocorte;
-use ejerciciocorte;
 CREATE TABLE Cursos (
     id_curso INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
